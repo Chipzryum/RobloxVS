@@ -1,28 +1,35 @@
--- List of tube models
-local tubes = {
-	game.Workspace.t1,
-	game.Workspace.t2,
-	game.Workspace.t3
-	-- Add more tubes here as needed
+-- number of tubes
+local numTubes = 2 
+
+-- Original tube to duplicate
+local originalTube = game.Workspace.t1
+
+-- Table to store the tubes
+local tubes = {}
+
+-- Duplicate the original tube based on numTubes
+for i = 1, numTubes do
+	local tubeClone = originalTube:Clone()
+	tubeClone.Name = "Tube" .. i
+	tubeClone.Parent = game.Workspace
+	tubes[i] = tubeClone
+end
+
+-- List of random locations
+local randomLocation = {
+	workspace.loca1,
+	workspace.loca2,
+	workspace.loca3,
+	workspace.loca4,
+	workspace.loca5,
+	workspace.loca6,
+	workspace.loca7,
+	workspace.loca8,
+	workspace.loca9, 
+	workspace.loca10,
+	workspace.loca11,
+	workspace.loca12
 }
-
-local workspace = game.Workspace
-
-local randomLocation = 
-	{
-		workspace.loca1,
-		workspace.loca2,
-		workspace.loca3,
-		workspace.loca4,
-		workspace.loca5,
-		workspace.loca6,
-		workspace.loca7,
-		workspace.loca8,
-		workspace.loca9, 
-		workspace.loca10,
-		workspace.loca11,
-		workspace.loca12
-	}
 
 -- Function to get a random location
 local function getRandomLocation(locations)
@@ -57,7 +64,7 @@ local function checkOverlap(tube, targetPosition)
 	return false
 end
 
--- Function to move tubes to random locations without overlap using lerp for smooth movement
+-- Function to move tubes to random locations without overlap using lerp
 local function moveTubes(tubes, locations)
 	for _, tube in ipairs(tubes) do
 		if tube.PrimaryPart then
@@ -93,7 +100,7 @@ local function moveTubes(tubes, locations)
 			if allMoved then
 				print(tube.Name .. " moved correctly.")
 			else
-				warn("Some children of " .. tube.Name .. "did not move correctly. Check for potential clipping issues.")
+				warn("Some children of " .. tube.Name .. " did not move correctly. Check for potential clipping issues.")
 			end
 		else
 			warn("No PrimaryPart set for " .. tube.Name)
@@ -104,79 +111,75 @@ end
 -- Call the function to move tubes
 moveTubes(tubes, randomLocation)
 
+-- FILLING TUBES PART
 
 local Players = game:GetService("Players")
-playerposx = 0
-playerposy = 0
-rainchosen = nil
+local playerposx = 0
+local playerposy = 0
+local rainchosen = nil
 
-
--- DOG AND CAT RAIN
-
+-- Tube fill function
 local tower = {"dog", "cat", "amogu"}
-
-
-
-x = 0
+local x = 0
 
 local function towerain()
-	while x < 125 do
+	local function rainModel()
+		if x >= 125 then return end
+
 		local dog = game.Workspace.storage.dog
 		local cat = game.Workspace.storage.cat
 		local amongus = game.Workspace.storage.amongus
-		local rain = tower[math.random(1,#tower)]
-		local locationt1 = game.Workspace.t1.t1loca.CFrame.Position
-		local locationt2 = game.Workspace.t2.t2loca.CFrame.Position
-		local locationt3 = game.Workspace.t3.t3loca.CFrame.Position
 		local baseplate = game.Workspace.Baseplate
-		local randlocation = {locationt1, locationt2, locationt3}
-		local locationt1 = locationt1
-		local locationt2 = locationt2
-		local locationt3 = locationt3
-		x += 1
 
-		wait(0.1)
-		if rain == "dog" then
-			local clonedmodel = dog:clone() --Replace ModelLocation
-			clonedmodel:WaitForChild("dogmodel")
-			clonedmodel.Parent = game.Workspace  -- rain
-			clonedmodel.PrimaryPart.CFrame = CFrame.new(randlocation[math.random(1,#randlocation)])
-			clonedmodel.PrimaryPart.Touched:Connect(function(rains)
-				if rains == baseplate then
-					clonedmodel:Destroy()
-				else
-					wait()
+		-- Get the positions of all tubes' locations
+		local randlocation = {}
+		for i, tube in ipairs(tubes) do
+			local location = tube:FindFirstChild(tube.Name .. "loca")
+			if location then
+				table.insert(randlocation, location.Position)
+			else
+				warn("Location not found for tube " .. tube.Name)
+			end
+			x = x + 1
+
+			-- Ensure the tower table is not empty before choosing a model to rain
+			if #tower > 0 then
+				-- Choose which model to rain
+				local clonedmodel
+				if rain == "dog" then
+					clonedmodel = dog:Clone()
+					clonedmodel:WaitForChild("dogmodel")
+				elseif rain == "cat" then
+					clonedmodel = cat:Clone()
+					clonedmodel:WaitForChild("catmodel")
+				elseif rain == "amogu" then
+					clonedmodel = amongus:Clone()
+					clonedmodel:WaitForChild("amongusmodel")
 				end
-			end)
-
-		elseif rain == "cat" then
-			local clonedmodel = cat:clone() --Replace ModelLocation
-			clonedmodel:WaitForChild("catmodel")
-			clonedmodel.Parent = game.Workspace
-			clonedmodel.PrimaryPart.CFrame = CFrame.new(randlocation[math.random(1,#randlocation)])
-			clonedmodel.PrimaryPart.Touched:Connect(function(rains)
-				if rains == baseplate then
-					clonedmodel:Destroy()
-				else
-					wait()
+				
+				-- Set the parent and position of the cloned model
+				if clonedmodel then
+					clonedmodel.Parent = game.Workspace
+					clonedmodel.PrimaryPart.CFrame = CFrame.new(randlocation[math.random(1, #randlocation)])
+					clonedmodel.PrimaryPart.Touched:Connect(function(rains)
+						if rains == baseplate then
+							clonedmodel:Destroy()
+						else
+							wait(0.1)
+						end
+					end)
 				end
-			end)
-
-		elseif rain == "amogu" then
-			local clonedmodel = amongus:clone() --Replace ModelLocation
-			clonedmodel:WaitForChild("amongusmodel")
-			clonedmodel.Parent = game.Workspace
-			clonedmodel.PrimaryPart.CFrame = CFrame.new(randlocation[math.random(1,#randlocation)])
-			clonedmodel.PrimaryPart.Touched:Connect(function(rains)
-				if rains == baseplate then
-					clonedmodel:Destroy()
-				else
-					wait()
-				end
-
-			end)
+				
+			else
+				warn("Tower table is empty")
+			end
 		end
-	end
-end
+		
+
+		task.defer(rainModel)
+	end 
+	
+	rainModel()
+end 
 
 towerain()
