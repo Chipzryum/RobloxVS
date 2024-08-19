@@ -3,12 +3,9 @@ playerposx = 0
 playerposy = 0
 rainchosen = nil
 
-
 -- DOG AND CAT RAIN
 
 local tower = {"dog", "cat", "amogu"}
-
-
 
 x = 0
 
@@ -66,10 +63,28 @@ local function towerain()
 				else
 					wait()
 				end
-				
 			end)
 		end
 	end
+
+	-- Wait for all tubes to finish moving
+	local tubesMoving = true
+	while tubesMoving do
+		tubesMoving = false
+		if game.Workspace.t1.t1loca:IsDescendantOf(game.Workspace) and game.Workspace.t1.t1loca.Velocity.Magnitude > 0 then
+			tubesMoving = true
+		end
+		if game.Workspace.t2.t2loca:IsDescendantOf(game.Workspace) and game.Workspace.t2.t2loca.Velocity.Magnitude > 0 then
+			tubesMoving = true
+		end
+		if game.Workspace.t3.t3loca:IsDescendantOf(game.Workspace) and game.Workspace.t3.t3loca.Velocity.Magnitude > 0 then
+			tubesMoving = true
+		end
+		wait()
+	end
+
+	-- Start filling tubes
+	-- Your code for filling tubes goes here
 end
 
 towerain()
