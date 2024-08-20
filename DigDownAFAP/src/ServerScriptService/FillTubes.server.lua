@@ -1,5 +1,5 @@
 -- Number of tubes
-local numTubes = 6
+local numTubes = 10
 
 -- Original tube to duplicate
 local originalTube = game.Workspace.t1
@@ -9,21 +9,22 @@ local tubes = {}
 
 -- Duplicate the original tube based on numTubes
 for i = 1, numTubes do
-    print("Cloning tube " .. i)
-    local tubeClone = originalTube:Clone()
-    tubeClone.Name = "Tube" .. i
-    tubeClone.Parent = game.Workspace
-    tubes[i] = tubeClone
+	print("Cloning tube " .. i)
+	local tubeClone = originalTube:Clone()
+	tubeClone.Name = "Tube" .. i
+	tubeClone.Parent = game.Workspace
+	tubes[i] = tubeClone
 
-    -- Rename the t1loca part within the tube and add it to randlocation
-    local locationPart = tubeClone:FindFirstChild("t1loca")
-    if locationPart then
-        locationPart.Name = "Tube" .. i .. "loca"
-    else
-        warn("t1loca part not found in " .. tubeClone.Name)
-    end
-    print("Tube " .. i .. " cloned successfully")
+	-- Rename the t1loca part within the tube and add it to randlocation
+	local locationPart = tubeClone:FindFirstChild("t1loca")
+	if locationPart then
+		locationPart.Name = "Tube" .. i .. "loca"
+	else
+		warn("t1loca part not found in " .. tubeClone.Name)
+	end
+	print("Tube " .. i .. " cloned successfully")
 end
+
 -- List of random locations
 local randomLocation = {
 	workspace.loca1,
@@ -35,15 +36,19 @@ local randomLocation = {
 	workspace.loca7,
 	workspace.loca8,
 	workspace.loca9, 
-	workspace.loca10,
-	workspace.loca11,
-	workspace.loca12
+	workspace.loca10
 }
 
--- Function to get a random location
-local function getRandomLocation(locations)
-	return locations[math.random(1, #locations)]
+-- Function to shuffle a table
+local function shuffleTable(t)
+	for i = #t, 2, -1 do
+		local j = math.random(1, i)
+		t[i], t[j] = t[j], t[i]
+	end
 end
+
+-- Shuffle random locations to ensure uniqueness
+shuffleTable(randomLocation)
 
 -- Function to check if all children have moved correctly
 local function checkChildrenMoved(model, targetPosition)
@@ -60,12 +65,22 @@ local function checkChildrenMoved(model, targetPosition)
 	return allMoved
 end
 
--- Function to check if the tube overlaps with others
+-- Function to check if the tube overlaps with others by comparing bounding boxes
 local function checkOverlap(tube, targetPosition)
+	local tubeCFrame = CFrame.new(targetPosition, targetPosition + tube.PrimaryPart.CFrame.LookVector) * tube.PrimaryPart.CFrame.Rotation
+	local tubeSize = tube.PrimaryPart.Size
+
 	for _, otherTube in ipairs(tubes) do
 		if otherTube ~= tube and otherTube.PrimaryPart then
-			local distance = (targetPosition - otherTube.PrimaryPart.Position).magnitude
-			if distance < (tube.PrimaryPart.Size.Z / 2 + otherTube.PrimaryPart.Size.Z / 2) then
+			local otherTubeCFrame = otherTube.PrimaryPart.CFrame
+			local otherTubeSize = otherTube.PrimaryPart.Size
+
+			-- Check if bounding boxes intersect
+			local doesOverlap = (math.abs(tubeCFrame.Position.X - otherTubeCFrame.Position.X) <= (tubeSize.X / 2 + otherTubeSize.X / 2)) and
+				(math.abs(tubeCFrame.Position.Y - otherTubeCFrame.Position.Y) <= (tubeSize.Y / 2 + otherTubeSize.Y / 2)) and
+				(math.abs(tubeCFrame.Position.Z - otherTubeCFrame.Position.Z) <= (tubeSize.Z / 2 + otherTubeSize.Z / 2))
+
+			if doesOverlap then
 				return true
 			end
 		end
@@ -75,14 +90,10 @@ end
 
 -- Function to move tubes to random locations without overlap using lerp
 local function moveTubes(tubes, locations)
-	for _, tube in ipairs(tubes) do
+	for i, tube in ipairs(tubes) do
 		if tube.PrimaryPart then
-			local targetLocation
-			local targetPosition
-			repeat
-				targetLocation = getRandomLocation(locations)
-				targetPosition = Vector3.new(targetLocation.Position.X, 41.5, targetLocation.Position.Z)
-			until not checkOverlap(tube, targetPosition)
+			local targetLocation = locations[i] -- Each tube gets a unique, pre-shuffled location
+			local targetPosition = Vector3.new(targetLocation.Position.X, 41.5, targetLocation.Position.Z)
 
 			-- Calculate the rotation in radians
 			local rotationCFrame = CFrame.Angles(math.rad(-90), math.rad(0), math.rad(0))
@@ -92,7 +103,7 @@ local function moveTubes(tubes, locations)
 
 			-- Smoothly move the tube using lerp
 			local startCFrame = tube.PrimaryPart.CFrame
-			local duration = 2 -- Duration of the animation in seconds
+			local duration = 1.69 -- Duration of the animation in seconds
 			local startTime = tick()
 
 			while tick() - startTime < duration do
@@ -119,6 +130,8 @@ end
 
 -- Call the function to move tubes
 moveTubes(tubes, randomLocation)
+
+
 
 -- FILLING TUBES PART
 
@@ -151,7 +164,7 @@ local function towerain()
 		-- Ensure the tower table is not empty before choosing a model to rain
 		if #tower > 0 then
 			-- Choose which model to rain
-			rainchosen = tower[math.random(1, #tower)]
+			local rainchosen = tower[math.random(1, #tower)]
 			local clonedmodel
 			if rainchosen == "dog" then
 				clonedmodel = dog:Clone()
