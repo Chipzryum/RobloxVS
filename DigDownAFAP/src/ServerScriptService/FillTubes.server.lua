@@ -1,5 +1,5 @@
 -- Number of tubes
-local numTubes = 2
+local numTubes = 6
 
 -- Original tube to duplicate
 local originalTube = game.Workspace.t1
@@ -9,20 +9,21 @@ local tubes = {}
 
 -- Duplicate the original tube based on numTubes
 for i = 1, numTubes do
-	local tubeClone = originalTube:Clone()
-	tubeClone.Name = "Tube" .. i
-	tubeClone.Parent = game.Workspace
-	tubes[i] = tubeClone
+    print("Cloning tube " .. i)
+    local tubeClone = originalTube:Clone()
+    tubeClone.Name = "Tube" .. i
+    tubeClone.Parent = game.Workspace
+    tubes[i] = tubeClone
 
-	-- Rename the t1loca part within the tube and add it to randlocation
-	local locationPart = tubeClone:FindFirstChild("t1loca")
-	if locationPart then
-		locationPart.Name = "Tube" .. i .. "loca"
-	else
-		warn("t1loca part not found in " .. tubeClone.Name)
-	end
+    -- Rename the t1loca part within the tube and add it to randlocation
+    local locationPart = tubeClone:FindFirstChild("t1loca")
+    if locationPart then
+        locationPart.Name = "Tube" .. i .. "loca"
+    else
+        warn("t1loca part not found in " .. tubeClone.Name)
+    end
+    print("Tube " .. i .. " cloned successfully")
 end
-
 -- List of random locations
 local randomLocation = {
 	workspace.loca1,
@@ -121,18 +122,13 @@ moveTubes(tubes, randomLocation)
 
 -- FILLING TUBES PART
 
-local Players = game:GetService("Players")
-local playerposx = 0
-local playerposy = 0
-local rainchosen = nil
-
--- Tube fill function
 local tower = {"dog", "cat", "amogu"}
 local x = 0
 
 local function towerain()
+	-- Recursive function to spawn models one by one
 	local function rainModel()
-		if x >= 125 then return end
+		if x >= numTubes * 50 then return end
 
 		local dog = game.Workspace.storage.dog
 		local cat = game.Workspace.storage.cat
@@ -184,7 +180,10 @@ local function towerain()
 			warn("Tower table is empty")
 		end
 
-		task.defer(rainModel)
+		wait(0.1) -- Delay between each rain model spawn (adjust as needed)
+
+		-- Call the function recursively to continue raining models
+		rainModel()
 	end 
 
 	rainModel()
