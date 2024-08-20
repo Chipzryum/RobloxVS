@@ -1,5 +1,5 @@
--- number of tubes
-local numTubes = 2 
+-- Number of tubes
+local numTubes = 2
 
 -- Original tube to duplicate
 local originalTube = game.Workspace.t1
@@ -13,6 +13,14 @@ for i = 1, numTubes do
 	tubeClone.Name = "Tube" .. i
 	tubeClone.Parent = game.Workspace
 	tubes[i] = tubeClone
+
+	-- Rename the t1loca part within the tube and add it to randlocation
+	local locationPart = tubeClone:FindFirstChild("t1loca")
+	if locationPart then
+		locationPart.Name = "Tube" .. i .. "loca"
+	else
+		warn("t1loca part not found in " .. tubeClone.Name)
+	end
 end
 
 -- List of random locations
@@ -140,45 +148,45 @@ local function towerain()
 			else
 				warn("Location not found for tube " .. tube.Name)
 			end
-			x = x + 1
-
-			-- Ensure the tower table is not empty before choosing a model to rain
-			if #tower > 0 then
-				-- Choose which model to rain
-				local clonedmodel
-				if rain == "dog" then
-					clonedmodel = dog:Clone()
-					clonedmodel:WaitForChild("dogmodel")
-				elseif rain == "cat" then
-					clonedmodel = cat:Clone()
-					clonedmodel:WaitForChild("catmodel")
-				elseif rain == "amogu" then
-					clonedmodel = amongus:Clone()
-					clonedmodel:WaitForChild("amongusmodel")
-				end
-				
-				-- Set the parent and position of the cloned model
-				if clonedmodel then
-					clonedmodel.Parent = game.Workspace
-					clonedmodel.PrimaryPart.CFrame = CFrame.new(randlocation[math.random(1, #randlocation)])
-					clonedmodel.PrimaryPart.Touched:Connect(function(rains)
-						if rains == baseplate then
-							clonedmodel:Destroy()
-						else
-							wait(0.1)
-						end
-					end)
-				end
-				
-			else
-				warn("Tower table is empty")
-			end
 		end
-		
+
+		x = x + 1
+
+		-- Ensure the tower table is not empty before choosing a model to rain
+		if #tower > 0 then
+			-- Choose which model to rain
+			rainchosen = tower[math.random(1, #tower)]
+			local clonedmodel
+			if rainchosen == "dog" then
+				clonedmodel = dog:Clone()
+				clonedmodel:WaitForChild("dogmodel")
+			elseif rainchosen == "cat" then
+				clonedmodel = cat:Clone()
+				clonedmodel:WaitForChild("catmodel")
+			elseif rainchosen == "amogu" then
+				clonedmodel = amongus:Clone()
+				clonedmodel:WaitForChild("amongusmodel")
+			end
+
+			-- Set the parent and position of the cloned model
+			if clonedmodel then
+				clonedmodel.Parent = game.Workspace
+				clonedmodel.PrimaryPart.CFrame = CFrame.new(randlocation[math.random(1, #randlocation)])
+				clonedmodel.PrimaryPart.Touched:Connect(function(rains)
+					if rains == baseplate then
+						clonedmodel:Destroy()
+					else
+						wait(0.1)
+					end
+				end)
+			end
+		else
+			warn("Tower table is empty")
+		end
 
 		task.defer(rainModel)
 	end 
-	
+
 	rainModel()
 end 
 
