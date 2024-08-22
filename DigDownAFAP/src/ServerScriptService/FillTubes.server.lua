@@ -1,5 +1,5 @@
 -- Number of tubes
-local numTubes = 5
+local numTubes = 2
 
 -- Original tube to duplicate
 local originalTube = game.Workspace.t1
@@ -7,7 +7,7 @@ local originalTube = game.Workspace.t1
 -- Table to store the tubes
 local tubes = {}
 
-local TweenService = game:GetService("TweenService")
+
 
 -- Duplicate the original tube based on numTubes
 for i = 1, numTubes do
@@ -149,7 +149,7 @@ moveTubes(tubes, randomLocation)
 -- k
 -- FILLING TUBES PART
 
-local tower = {"dog", "cat", "amogu"}
+local tower = {"cobbleStone", "grassBlock", "woodLog"}
 local x = 0
 
 local function towerain()
@@ -157,9 +157,9 @@ local function towerain()
 	local function rainModel()
 		if x >= numTubes * 50 then return end
 
-		local dog = game.Workspace.storage.dog
-		local cat = game.Workspace.storage.cat
-		local amongus = game.Workspace.storage.amongus
+		local cobbleStone = game.Workspace.Blocks.cobbleStone
+		local grassBlock = game.Workspace.Blocks.grassBlock
+		local woodLog = game.Workspace.Blocks.woodLog
 		local baseplate = game.Workspace.Baseplate
 
 		-- Get the positions of all tubes' locations
@@ -180,22 +180,19 @@ local function towerain()
 			-- Choose which model to rain
 			local rainchosen = tower[math.random(1, #tower)]
 			local clonedmodel
-			if rainchosen == "dog" then
-				clonedmodel = dog:Clone()
-				clonedmodel:WaitForChild("dogmodel")
-			elseif rainchosen == "cat" then
-				clonedmodel = cat:Clone()
-				clonedmodel:WaitForChild("catmodel")
-			elseif rainchosen == "amogu" then
-				clonedmodel = amongus:Clone()
-				clonedmodel:WaitForChild("amongusmodel")
+			if rainchosen == "cobbleStone" then
+				clonedmodel = cobbleStone:Clone()
+			elseif rainchosen == "grassBlock" then
+				clonedmodel = grassBlock:Clone()
+			elseif rainchosen == "woodLog" then
+				clonedmodel = woodLog:Clone()
 			end
 
 			-- Set the parent and position of the cloned model
 			if clonedmodel then
 				clonedmodel.Parent = game.Workspace
-				clonedmodel.PrimaryPart.CFrame = CFrame.new(randlocation[math.random(1, #randlocation)])
-				clonedmodel.PrimaryPart.Touched:Connect(function(rains)
+				clonedmodel.CFrame = CFrame.new(randlocation[math.random(1, #randlocation)])
+				clonedmodel.Touched:Connect(function(rains)
 					if rains == baseplate then
 						clonedmodel:Destroy()
 					else
