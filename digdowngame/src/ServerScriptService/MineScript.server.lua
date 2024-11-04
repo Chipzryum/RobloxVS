@@ -92,10 +92,7 @@ MineEvent.OnServerEvent:Connect(function(plr, ore, tool)
 			
 			SummonXP:Fire(ore)  -- Passing ore through the event
 
-
-
-
-
+			
 			-- Clean up health bar if ore is destroyed
 			local healthBarGui = ore:FindFirstChild("HealthBarGui")
 			if healthBarGui then
