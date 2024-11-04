@@ -142,3 +142,5 @@ SummonXP.Event:Connect(function(ore)
 		print("Error: ore part is not valid make sure ore is valid" )
 	end
 end)
+
+-- they suseed 
