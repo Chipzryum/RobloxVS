@@ -144,3 +144,4 @@ SummonXP.Event:Connect(function(ore)
 end)
 
 -- they suseed 
+-- ima millionaire
