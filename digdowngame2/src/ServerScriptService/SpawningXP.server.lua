@@ -86,7 +86,7 @@ SummonXP.Event:Connect(function(ore)
 				end
 			end
 
-			for i = 1, 2 do
+			for i = 1, 10 do
 				-- Clone the orb
 				local newOrb = orbTemplate:Clone()
 				local newPosition = getRandomPositionInOre(ore)
