@@ -261,7 +261,7 @@ function StudioProvider:updateTheme()
 			theme = darkTheme,
 		})
 	else
-		warn("Unexpected theme '{}'' -- falling back to light theme!", studioTheme.Name)
+		Log.warn("Unexpected theme '{}'' -- falling back to light theme!", studioTheme.Name)
 
 		self:setState({
 			theme = lightTheme,

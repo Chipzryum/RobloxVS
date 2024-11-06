@@ -1,5 +1,5 @@
 -- Number of tubes
-local numTubes = 5
+local numTubes = 2
 
 -- Original tube to duplicate
 local originalTube = game.Workspace.t1
@@ -117,7 +117,7 @@ local function moveTubes(tubes, locations)
 			-- Delete the original tube just before the last one moves
 			if i == numTubes - 1 then
 				originalTube:Destroy()
-				print("Original tube deleted.") 
+				print("Original tube deleted.")
 			end
 
 			while tick() - startTime < duration do

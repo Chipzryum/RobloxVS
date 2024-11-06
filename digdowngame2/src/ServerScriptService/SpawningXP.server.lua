@@ -83,10 +83,10 @@ SummonXP.Event:Connect(function(ore)
 			for _, child in ipairs(orbTemplate:GetChildren()) do
 				if child:IsA("BasePart") then
 					childOffsets[child.Name] = getRelativeOffset(orbTemplate, child)
-                end
+				end
 			end
 
-			for i = 1, 10 do
+			for i = 1, 2 do
 				-- Clone the orb
 				local newOrb = orbTemplate:Clone()
 				local newPosition = getRandomPositionInOre(ore)
@@ -143,5 +143,3 @@ SummonXP.Event:Connect(function(ore)
 	end
 end)
 
--- they suseed 
--- ima millionaire
