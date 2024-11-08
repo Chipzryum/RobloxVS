@@ -1,5 +1,3 @@
-local DataStoreService = game:GetService("DataStoreService")
-local MiningDataStore = DataStoreService:GetDataStore("MiningDataStore")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local MineEvent = ReplicatedStorage:WaitForChild("Mining")
@@ -7,91 +5,26 @@ local SummonXP = ReplicatedStorage:WaitForChild("SummonXP")
 local UpdateHealthBar = ReplicatedStorage:WaitForChild("UpdateHealthBar")
 local BlockFloating = ReplicatedStorage:WaitForChild("BlockFloating")
 
-
-local RETRY_LIMIT = 5  -- Maximum number of retries for DataStore operations
-
--- Function to load player data
-local function loadPlayerData(plr)
-	local leaderstats = Instance.new("Folder")
-	leaderstats.Name = "leaderstats"
-	leaderstats.Parent = plr
-
-	local Cash = Instance.new("NumberValue")
-	Cash.Name = "Cash"
-	Cash.Value = 0
-	Cash.Parent = leaderstats
-
-	local Key = tostring(plr.UserId)
-	local retries = 0
-	local success, errormessage
-
-	repeat
-		success, errormessage = pcall(function()
-			local Data = MiningDataStore:GetAsync(Key)
-			if Data and Data[1] then
-				Cash.Value = Data[1]
-			end
-		end)
-		if not success then
-			retries = retries + 1
-			warn("Failed to load data for player " .. plr.Name .. ": " .. errormessage)
-			if retries < RETRY_LIMIT then
-				wait(5)  -- Wait before retrying
-			end
-		end
-	until success or retries >= RETRY_LIMIT
-end
-
--- Function to save player data
-local function savePlayerData(plr)
-	local Key = tostring(plr.UserId)
-	local retries = 0
-	local success, errormessage
-
-	repeat
-		success, errormessage = pcall(function()
-			MiningDataStore:SetAsync(Key, {plr.leaderstats.Cash.Value})
-		end)
-		if not success then
-			retries = retries + 1
-			warn("Failed to save data for player " .. plr.Name .. ": " .. errormessage)
-			if retries < RETRY_LIMIT then
-				wait(5)  -- Wait before retrying
-			end
-		end
-	until success or retries >= RETRY_LIMIT
-end
-
--- Load player data when they join
-game.Players.PlayerAdded:Connect(loadPlayerData)
-
--- Save player data when they leave
-game.Players.PlayerRemoving:Connect(savePlayerData)
-
-
-
 -- Mining event handling
 MineEvent.OnServerEvent:Connect(function(plr, ore, tool)
 	if ore and ore:IsA("BasePart") and ore:FindFirstChild("Durability") then
 		local damage = tool.Damage.Value  -- Default damage for non-primary tools
 
 		if tool and tool:IsA("Tool") and tool.ToolType.Value == ore.BlockType.Value then
-			damage = damage+5  -- Higher damage for primary tool
+			damage = damage + 5  -- Higher damage for primary tool
 		end
 
 		-- Ensure MaxDurability is set
-		local maxDurability = ore.MaxDurability.Value -- Default value if not set
+		local maxDurability = ore.MaxDurability.Value  -- Default value if not set
 
 		-- Update durability or destroy the ore
 		if ore.Durability.Value <= damage then
-			-- everything that happens DURING BLOCK BREAKS
-			ore:destroy()
+			-- Everything that happens DURING BLOCK BREAKS
+			ore:Destroy()
 			print("broken")
 			plr.leaderstats.Cash.Value = plr.leaderstats.Cash.Value + 5 
 
-			
 			SummonXP:Fire(ore)  -- Passing ore through the event
-
 			
 			-- Clean up health bar if ore is destroyed
 			local healthBarGui = ore:FindFirstChild("HealthBarGui")

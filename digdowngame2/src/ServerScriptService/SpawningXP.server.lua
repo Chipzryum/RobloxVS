@@ -65,6 +65,9 @@ local function attractOrbToPlayer(orb, player)
 
 			if (humanoidRootPart.Position - orb.Position).Magnitude < 1 then
 				print("Orb collected by player:", player.Name)
+				if player:FindFirstChild("leaderstats") and player.leaderstats:FindFirstChild("XP") then
+					player.leaderstats.XP.Value = player.leaderstats.XP.Value + 1
+				end
 				isAttracting = false
 				orb:Destroy()
 			end
@@ -142,4 +145,5 @@ SummonXP.Event:Connect(function(ore)
 		print("Error: ore part is not valid make sure ore is valid" )
 	end
 end)
+
 

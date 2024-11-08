@@ -1,5 +1,5 @@
 -- Number of tubes
-local numTubes = 3
+local numTubes = 5
 
 -- Original tube to duplicate
 local originalTube = game.Workspace.t1
