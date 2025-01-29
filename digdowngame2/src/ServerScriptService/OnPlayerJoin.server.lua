@@ -1,0 +1,27 @@
+--local idleAnimationId = "rbxassetid://5319922112" -- Replace with your animation ID
+
+--game.Players.PlayerAdded:Connect(function(player)
+--	wait(0.1)
+--	player.CharacterAdded:Connect(function(character)
+--		local animateScript = character:WaitForChild("Animate")
+--		if animateScript then
+--			local idle = animateScript:WaitForChild("idle", 10)
+--			if idle then
+--				-- Replace default idle animations
+--				local animation1 = idle:FindFirstChild("Animation1")
+--				if animation1 then
+--					animation1.AnimationId = idleAnimationId
+--				end
+
+--				local animation2 = idle:FindFirstChild("Animation2")
+--				if animation2 then
+--					animation2.AnimationId = idleAnimationId
+--				end
+--			else
+--				print("Idle animations not found.")
+--			end
+--		else
+--			print("Animate script not found.")
+--		end
+--	end)
+--end)

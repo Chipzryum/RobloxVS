@@ -84,4 +84,3 @@ end
 -- Connect the click event
 clickDetector.MouseClick:Connect(onClicked)
 
-print("Health bar script loaded successfully")

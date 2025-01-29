@@ -1,4 +1,4 @@
-local tools = game.StarterPack.Pickaxes
+local tools = game.ServerStorage.Pickaxes
 local player = game.Players.LocalPlayer
 
 
