@@ -67,7 +67,7 @@ function ShopClient.FilterItemsByCategory(category)
 	-- Show only items matching the category
 	if category then
 		for itemName, button in pairs(ShopClient.ItemButtons) do
-			local item = RS.Tools:FindFirstChild(itemName)
+			local item = RS.ShopItems:FindFirstChild(itemName)
 			if item and item:GetAttribute("Category") == category then
 				button.Visible = true
 			end
@@ -191,7 +191,7 @@ function ShopClient.OnSellButton()
 end
 
 function ShopClient.LoadShopItems()
-	for _, item in ipairs(RS.Tools:GetChildren()) do
+	for _, item in ipairs(RS.ShopItems:GetChildren()) do
 		ShopClient.CreateItemButton(item)
 	end
 end

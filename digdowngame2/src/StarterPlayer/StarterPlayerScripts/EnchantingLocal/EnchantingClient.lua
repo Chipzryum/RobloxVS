@@ -19,6 +19,8 @@ local enchantmentF = gui:WaitForChild("EnchantmentFrame")
 enchantmentF.Visible = false
 local EnchantsF = enchantmentF:WaitForChild("Enchants")
 local SampleEnchantB = EnchantsF:WaitForChild("SampleEnchant")
+local LapisT = SampleEnchantB:WaitForChild("LapisT")
+local XP = SampleEnchantB:WaitForChild("XP")
 SampleEnchantB.Visible = false
 
 local itemInfoF = enchantmentF:WaitForChild("ItemInfo")
@@ -52,6 +54,37 @@ InventoryClient.ErrorDB = false
 InventoryClient.ErrorPosition = itemInfoF.Position;
 InventoryClient.ErrorTime = 2
 
+-- Function to update Lapis slot
+local function updateLapisSlot(lapisData)
+	if lapisData then
+		lapisSlotF.Image.Image = lapisData.Image
+		lapisSlotF.ItemCount.Text = #lapisData.Items .. "x"
+	else
+		lapisSlotF.Image.Image = ""
+		lapisSlotF.ItemCount.Text = "0x"
+	end
+end
+
+local function createEnchantmentButton(enchantName, Lapis, xp)
+	local enchantButton = SampleEnchantB:Clone()
+
+	enchantButton.Text = enchantName
+	enchantButton.Visible = true
+	enchantButton.Name = enchantName
+
+	-- Clone and update level and XP display
+	local LapisText = LapisT:Clone()
+	LapisText.Text = "Lapis: " .. Lapis
+	LapisText.Parent = enchantButton
+
+	local xpText = XP:Clone()
+	xpText.Text = "XP: " .. xp
+	xpText.Parent = enchantButton
+
+	return enchantButton
+end
+
+
 -- starting
 function InventoryClient.Start()
 	-- disabling start gui
@@ -73,19 +106,6 @@ function InventoryClient.Start()
 		print("Client received enchants:", enchants) -- Debug statement
 		InventoryClient.UpdateEnchantButtons(enchants)
 	end)
-
-	--open/close
-	UIS.InputBegan:Connect(InventoryClient.OnInputBegan)
-end
-
--- Input began
-function InventoryClient.OnInputBegan(input: InputObject, gameProcessedEvent: boolean)
-	if gameProcessedEvent then return end
-
-	-- Open / close
-	if input.KeyCode == Enum.KeyCode.E then
-		InventoryClient.SetWindowOpen(not InventoryClient.IsOpen)
-	end
 end
 
 -- Opening and closing
@@ -153,6 +173,9 @@ function InventoryClient.UpdateDisplay()
 		end)
 	end
 
+	-- Update Lapis slot
+	updateLapisSlot(inv.Lapis)
+
 	-- reselecting item
 	local selectedStack: Types.StackData = InventoryClient.FindStackDataFromId(InventoryClient.SelectedStackId)
 	InventoryClient.SelectItem(selectedStack)
@@ -203,20 +226,37 @@ function InventoryClient.SelectItem(stackData: Types.StackData)
 	end
 end
 
--- Function to update enchant buttons
+-- Function to update enchant buttons (updated to include Level and XP)
 function InventoryClient.UpdateEnchantButtons(enchants)
+	-- Clear existing enchant buttons
 	for _, enchantButton in ipairs(EnchantsF:GetChildren()) do
 		if enchantButton.ClassName == "TextButton" then
 			enchantButton:Destroy()
 		end
 	end
 
-	for i, enchantName in ipairs(enchants) do
-		local enchantButton = SampleEnchantB:Clone()
-		enchantButton.Text = enchantName
-		enchantButton.Visible = true
+	-- Create new enchant buttons
+	for i, enchantData in ipairs(enchants) do
+		local enchantButton = createEnchantmentButton(enchantData.Name, enchantData.Lapis, enchantData.XP)
+		--print("PASSING VALUES" .. enchantdata.lapis, enchantData.XP)
 		enchantButton.Parent = EnchantsF
-		print("Added enchant button:", enchantName) -- Debug statement
+
+		-- Add click handler to duplicate the enchant
+		enchantButton.MouseButton1Click:Connect(function()
+			print("Enchant button clicked:", enchantData.Name)
+			if InventoryClient.SelectedStackId then
+				local selectedStack = InventoryClient.FindStackDataFromId(InventoryClient.SelectedStackId)
+				if selectedStack then
+					print("Requesting to apply enchant", enchantData.Name, "to item:", selectedStack.Name)
+					-- Send Lapis and XP costs to the server
+					Signal.FireServer("EnchantingClient:ApplyEnchant", selectedStack, enchantData.Name, enchantData.Lapis, enchantData.XP)
+				else
+					warn("Selected item not found")
+				end
+			else
+				print("No item selected for applying enchant")
+			end
+		end)
 	end
 end
 

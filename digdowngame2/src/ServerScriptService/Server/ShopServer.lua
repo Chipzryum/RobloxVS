@@ -2,6 +2,9 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Players = game:GetService("Players")
 local DataStoreService = game:GetService("DataStoreService")
 local MiningDataStore = DataStoreService:GetDataStore("MiningDataStore")
+local Signal = ReplicatedStorage:WaitForChild("Modules"):WaitForChild("Signal")
+local ServerStorage = game:GetService("ServerStorage")
+
 
 local shopEvents = Instance.new("RemoteEvent")
 shopEvents.Name = "ShopEvents"
@@ -16,7 +19,7 @@ local function buyItem(player, itemName)
 	local leaderstats = waitForLeaderstats(player)
 	if not leaderstats then return end -- Leaderstats folder doesn't exist
 
-	local item = ReplicatedStorage.Tools:FindFirstChild(itemName)
+	local item = ReplicatedStorage.ShopItems:FindFirstChild(itemName)
 	if item then
 		local price = item:GetAttribute("Price")
 		local cash = leaderstats:FindFirstChild("Cash")

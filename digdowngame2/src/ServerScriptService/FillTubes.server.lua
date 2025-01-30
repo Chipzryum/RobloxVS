@@ -151,15 +151,15 @@ moveTubes(tubes, randomLocation)
 
 local tower = {"cobbleStone", "grassBlock", "woodLog"}
 local x = 0
-
+local SS = game:GetService("ServerStorage")
 local function towerain()
 	-- Recursive function to spawn models one by one
 	local function rainModel()
 		if x >= numTubes * 11 then return end
 
-		local cobbleStone = game.Workspace.Blocks.cobbleStone
-		local grassBlock = game.Workspace.Blocks.grassBlock
-		local woodLog = game.Workspace.Blocks.woodLog
+		local cobbleStone = SS.Blocks:WaitForChild("CobbleStone")
+		local grassBlock = SS.Blocks:WaitForChild("GrassBlock")
+		local woodLog = SS.Blocks:WaitForChild("WoodLog")
 		local baseplate = game.Workspace.Baseplate
 
 		-- Get the positions of all tubes' locations

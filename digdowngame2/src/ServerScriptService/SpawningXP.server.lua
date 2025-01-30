@@ -3,7 +3,7 @@ local RunService = game:GetService("RunService")
 local Players = game:GetService("Players")
 local PlayerDataHandler = require(game.ServerScriptService.PlayerDataHandler)
 local Signal = require(game.ReplicatedStorage.Modules.Signal)
-
+local ServerStorage = game:GetService("ServerStorage")
 -- Constants
 local XP_SETTINGS = {
 	BASE_XP_TO_LEVEL = 100,
@@ -119,7 +119,7 @@ local SummonXP = ReplicatedStorage:WaitForChild("SummonXP")
 SummonXP.Event:Connect(function(ore)
 	if not ore or not ore:IsA("BasePart") then return end
 
-	local orbTemplate = game.Workspace.Blocks:FindFirstChild("Orb")
+	local orbTemplate = ServerStorage:FindFirstChild("Orb")
 	if not orbTemplate then
 		warn("Orb template not found")
 		return

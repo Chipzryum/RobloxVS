@@ -66,7 +66,7 @@ function InventoryServer.Start()
 	Signal.ListenRemote("InventoryServer:HoldItem", InventoryServer.HoldItem)
 	Signal.ListenRemote("InventoryServer:UnHoldItems", InventoryServer.UnHoldItems)
 	Signal.ListenRemote("Inventory:DropItem", InventoryServer.DropItem)
-	
+
 
 	--Game shutdown
 	game:BindToClose(function()
@@ -445,7 +445,54 @@ function InventoryServer.DropItem(player: Player, stackId: number)
 end
 
 
+function InventoryServer.DeleteItem(player: Player, stackId: number)
+	print("DELETE REQUEST SENT TO SERVER FROM ENCHANT")
+	-- Finding stack data from id
+	local stackData = InventoryServer.FindStackDataFromId(player, stackId)
+	if not stackData then
+		debugPrint("No stack data found for stackId", stackId)
+		return
+	end
 
+	-- Character and root part checks
+	local char = player.Character
+	if not char then
+		debugPrint("No character found for player", player.Name)
+		return
+	end
+
+	-- Deleting first item in list
+	local toolToDelete = stackData.Items[1]
+	if not toolToDelete then
+		debugPrint("No tool found in stack:", stackData.Name)
+		return
+	end
+
+	-- Remove the tool from the game
+	toolToDelete:Destroy()
+
+	-- Remove the first item from the stack
+	table.remove(stackData.Items, 1)
+
+	-- If the stack is empty, remove the entire stack
+	if #stackData.Items == 0 then
+		local inv = InventoryServer.AllInventories[player]
+		local invIndex = table.find(inv.Inventory, stackData)
+		if invIndex then
+			table.remove(inv.Inventory, invIndex)
+			InventoryServer.UnequipFromHotbar(player, stackId)
+		end
+	end
+
+	-- Fire update to client
+	Signal.FireClient(player, "InventoryClient:Update", InventoryServer.AllInventories[player])
+	return true
+end
+
+local LapisDeleter = RS:WaitForChild("LapisDeleter")
+LapisDeleter.Event:Connect(function(player, stackId)
+	InventoryServer.DeleteItem(player, stackId)
+end)
 
 -- holding item
 function InventoryServer.HoldItem(player: Player, slotNum: number)
@@ -481,6 +528,7 @@ function InventoryServer.HoldItem(player: Player, slotNum: number)
 
 		-- updating client
 		Signal.FireClient(player, "InventoryClient:Update", inv)
+		print("WHEN EQUIPPING ITEM< ",  inv)
 	end
 end
 
