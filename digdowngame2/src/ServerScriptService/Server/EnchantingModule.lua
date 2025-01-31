@@ -99,8 +99,8 @@ local function GetRandomEnchants(count)
 		local randomEnchant = allEnchants[math.random(1, #allEnchants)]
 		table.insert(enchants, {
 			Name = randomEnchant.Name,
-			Lapis = 1, -- Hardcoded for now
-			XP = 1     -- Hardcoded for now
+			Lapis =2, -- Hardcoded for now
+			XP = 21     -- Hardcoded for now
 		})
 	end
 	return enchants
@@ -169,7 +169,6 @@ function EnchantingServer.ApplyEnchant(player: Player, stackData: Types.StackDat
     end
 
     -- Check Lapis quantity
-    local lapisCost = 1
     if #lapisStack.Items < lapisCost then
         warn("[Lapis] Insufficient Lapis for enchantment!")
         return
@@ -208,15 +207,15 @@ function EnchantingServer.ApplyEnchant(player: Player, stackData: Types.StackDat
     -- Delete Lapis using Inventory Server method
 	print(`[Lapis Deletion] Attempting to delete Lapis - Stack ID: {lapisStack.StackId}`)
 	local LapisDeleter = RS:WaitForChild("LapisDeleter")
-    LapisDeleter:Fire(player, lapisStack.StackId)
+	LapisDeleter:Fire(player, lapisStack.StackId, lapisCost)
     print("[Lapis Deletion] Deletion request sent to Inventory Server")
 
     print("[Enchant] Enchantment process completed successfully")
 end
 
 -- Listen for enchant application requests from clients
-Signal.ListenRemote("EnchantingClient:ApplyEnchant", function(player: Player, stackData: Types.StackData, enchantName: string)
-	EnchantingServer.ApplyEnchant(player, stackData, enchantName)
+Signal.ListenRemote("EnchantingClient:ApplyEnchant", function(player: Player, stackData: Types.StackData, enchantName: string, lapisCost: number, xpCost: number)
+	EnchantingServer.ApplyEnchant(player, stackData, enchantName, lapisCost, xpCost)
 end)
 
 return EnchantingServer

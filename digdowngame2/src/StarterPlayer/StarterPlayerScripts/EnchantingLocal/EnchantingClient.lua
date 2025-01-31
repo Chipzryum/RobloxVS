@@ -247,7 +247,7 @@ function InventoryClient.UpdateEnchantButtons(enchants)
 			if InventoryClient.SelectedStackId then
 				local selectedStack = InventoryClient.FindStackDataFromId(InventoryClient.SelectedStackId)
 				if selectedStack then
-					print("Requesting to apply enchant", enchantData.Name, "to item:", selectedStack.Name)
+					print("Requesting to apply enchant", enchantData.Name, "to item:", selectedStack.Name, enchantData.Lapis, enchantData.XP)
 					-- Send Lapis and XP costs to the server
 					Signal.FireServer("EnchantingClient:ApplyEnchant", selectedStack, enchantData.Name, enchantData.Lapis, enchantData.XP)
 				else

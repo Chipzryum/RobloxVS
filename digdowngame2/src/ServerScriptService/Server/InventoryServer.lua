@@ -445,8 +445,10 @@ function InventoryServer.DropItem(player: Player, stackId: number)
 end
 
 
-function InventoryServer.DeleteItem(player: Player, stackId: number)
-	print("DELETE REQUEST SENT TO SERVER FROM ENCHANT")
+function InventoryServer.DeleteItem(player: Player, stackId: number, quantity: number?)
+	quantity = quantity or 1  -- Default to removing 1 if no quantity specified
+	print(`DELETE REQUEST: Removing {quantity} items from stack {stackId}`)
+
 	-- Finding stack data from id
 	local stackData = InventoryServer.FindStackDataFromId(player, stackId)
 	if not stackData then
@@ -461,20 +463,23 @@ function InventoryServer.DeleteItem(player: Player, stackId: number)
 		return
 	end
 
-	-- Deleting first item in list
-	local toolToDelete = stackData.Items[1]
-	if not toolToDelete then
-		debugPrint("No tool found in stack:", stackData.Name)
-		return
+	-- Remove specified quantity of items
+	for i = 1, quantity do
+		-- Check if stack is empty before each removal
+		if #stackData.Items == 0 then
+			debugPrint("Stack already empty during deletion")
+			break
+		end
+
+		-- Get and destroy the first item in the stack
+		local toolToDelete = stackData.Items[1]
+		if toolToDelete then
+			toolToDelete:Destroy()
+			table.remove(stackData.Items, 1)
+		end
 	end
 
-	-- Remove the tool from the game
-	toolToDelete:Destroy()
-
-	-- Remove the first item from the stack
-	table.remove(stackData.Items, 1)
-
-	-- If the stack is empty, remove the entire stack
+	-- Clean up empty stack
 	if #stackData.Items == 0 then
 		local inv = InventoryServer.AllInventories[player]
 		local invIndex = table.find(inv.Inventory, stackData)
@@ -490,8 +495,12 @@ function InventoryServer.DeleteItem(player: Player, stackId: number)
 end
 
 local LapisDeleter = RS:WaitForChild("LapisDeleter")
-LapisDeleter.Event:Connect(function(player, stackId)
-	InventoryServer.DeleteItem(player, stackId)
+LapisDeleter.Event:Connect(function(player, stackId, quantity)
+	-- Default to removing 1 if quantity not specified
+	local removeQuantity = quantity or 1
+
+	-- Update to remove specific quantity from stack
+	InventoryServer.DeleteItem(player, stackId, removeQuantity)
 end)
 
 -- holding item
